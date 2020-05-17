@@ -83,17 +83,11 @@ function isLeapYear(date) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
 function timeSpanToString(startDate, endDate) {
-  const delta = startDate.getTime() - endDate.getTime();
-  const ms = delta % 1000;
-  let s = Math.trank(delta % 1000);
-  let min = Math.trank(s % 60);
-  s -= min * 60;
-  const hour = Math.trank(min % 60);
-  min -= hour * 60;
-
-  return `${hour}:${min}:${s}.${ms}`;
+  const delta = endDate.getTime() - startDate.getTime();
+  const res = new Date(delta - 3 * 60 * 60 * 1000).toLocaleString().split(' ')[1];
+  const ms = String(delta).slice(-3);
+  return `0${res}.${ms}`;
 }
-
 
 /**
  * Returns the angle (in radians) between the hands of an analog clock
@@ -111,8 +105,22 @@ function timeSpanToString(startDate, endDate) {
  *    Date.UTC(2016,3,5,18, 0) => Math.PI
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
-function angleBetweenClockHands(/* date */) {
-  throw new Error('Not implemented');
+
+function angleBetweenClockHands(date) {
+  const time = new Date(date - 3 * 3600000);
+  let hour = time.getHours();
+  if (hour > 12) {
+    hour -= 12;
+  }
+  const min = time.getMinutes();
+  const angleOfMin = min * 6;
+  const angleOfHour = hour * 30 + min * 0.5;
+  let angle = angleOfHour - angleOfMin;
+  if (angle > 180) {
+    angle = 360 - angle;
+  }
+  angle = Math.abs(angle);
+  return angle * (Math.PI / 180);
 }
 
 
